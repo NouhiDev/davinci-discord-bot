@@ -18,7 +18,7 @@ const client = new Client({
 });
 
 client.on("ready", () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+  console.log(`DaVinci has successfully started. Logged in as ${client.user.tag}! Version: ${process.env.VERSION}`);
 });
 
 client.on("interactionCreate", async (interaction) => {
