@@ -12,7 +12,12 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 // Setup DaVinci
-const { Client, GatewayIntentBits } = require("discord.js");
+const {
+  Client,
+  GatewayIntentBits,
+  ActivityType,
+  EmbedBuilder,
+} = require("discord.js");
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -21,9 +26,17 @@ const client = new Client({
   ],
 });
 
+const personality = process.env.PERSONALITY;
+
 // Start Message
 client.on("ready", () => {
-  console.log(`DaVinci has successfully started. Logged in as ${client.user.tag}! Version: ${process.env.VERSION}, running on ${client.guilds.cache.size} servers.`);
+  console.log(
+    `DaVinci has successfully started. Logged in as ${client.user.tag}! Version: ${process.env.VERSION}, running on ${client.guilds.cache.size} servers.`
+  );
+
+  client.user.setActivity("/help | nouhi.dev/davinci", {
+    type: ActivityType.Playing,
+  });
 });
 
 // Commands Handling
@@ -31,15 +44,22 @@ client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === "ask") {
-    user_prompt = interaction.options.getString("prompt");
+    user_prompt = personality + interaction.options.getString("prompt");
     try {
       await interaction.reply("Processing your request...");
       const result = await get_ai_response(user_prompt);
-      await interaction.editReply(result);
+      await interaction.editReply(result.trim());
     } catch {
       console.log("An internal error occurred.");
     }
+  }
 
+  if (interaction.commandName === "info") {
+    interaction.reply({ embeds: [infoEmbed] });
+  }
+
+  if (interaction.commandName === "help") {
+    interaction.reply({ embeds: [helpEmbed] });
   }
 });
 
@@ -58,6 +78,50 @@ async function get_ai_response(prompt) {
 
   return response.data.choices[0].text;
 }
+
+// Info Embed
+const infoEmbed = new EmbedBuilder()
+  .setColor(0xff8086)
+  .setTitle("DaVinci v" + `${process.env.VERSION}`)
+  .setURL("https://nouhi.dev/davinci/")
+  .setAuthor({
+    name: "/info",
+    iconURL: "https://nouhi.dev/assets/pfp_hd.png",
+    url: "https://nouhi.dev/davinci",
+  })
+  .setDescription(
+    "The DaVinci discord bot utilizes the OpenAI API to provide natural language processing capabilities within Discord."
+  )
+  .setThumbnail("https://nouhi.dev/assets/pfp_hd.png")
+  .setTimestamp()
+  .setFooter({
+    text: "Created by nouhidev | nouhi#0439",
+    iconURL: "https://nouhi.dev/assets/pfp_hd.png",
+  });
+
+// Help Embed
+const helpEmbed = new EmbedBuilder()
+  .setColor(0xff8086)
+  .setTitle("How to use DaVinci:")
+  .setURL("https://nouhi.dev/davinci/")
+  .setAuthor({
+    name: "/help",
+    iconURL: "https://nouhi.dev/assets/pfp_hd.png",
+  })
+  .setDescription(
+    "You can use the following commands to interact with DaVinci:"
+  )
+  .setThumbnail("https://nouhi.dev/assets/pfp_hd.png")
+  .addFields(
+    { name: "/ask prompt:", value: "Ask a question", inline: true },
+    { name: "/info", value: "Displays this message", inline: true },
+    { name: "/help", value: "Displays a guide", inline: true }
+  )
+  .setTimestamp()
+  .setFooter({
+    text: "Created by nouhidev | nouhi#0439",
+    iconURL: "https://nouhi.dev/assets/pfp_hd.png",
+  });
 
 // Login DaVinci
 client.login(process.env.DISCORD_KEY);

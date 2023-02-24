@@ -13,8 +13,16 @@ const commands = [
             type: 3,
             required: true
         }
-    ]
+    ],
   },
+  {
+    name: 'info',
+    description: "Get information on DaVinci.",
+  },
+  {
+    name: 'help',
+    description: "Discover what you can do with DaVinci.",
+  }
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_KEY);
