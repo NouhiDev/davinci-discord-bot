@@ -23,7 +23,7 @@ const client = new Client({
 
 // Start Message
 client.on("ready", () => {
-  console.log(`DaVinci has successfully started. Logged in as ${client.user.tag}! Version: ${process.env.VERSION}`);
+  console.log(`DaVinci has successfully started. Logged in as ${client.user.tag}! Version: ${process.env.VERSION}, running on ${client.guilds.cache.size} servers.`);
 });
 
 // Commands Handling
