@@ -32,10 +32,14 @@ client.on("interactionCreate", async (interaction) => {
 
   if (interaction.commandName === "ask") {
     user_prompt = interaction.options.getString("prompt");
+    try {
+      await interaction.reply("Processing your request.");
+      const result = await get_ai_response(user_prompt);
+      await interaction.editReply(result);
+    } catch {
+      console.log("An internal error occurred.");
+    }
 
-    await interaction.reply("Processing your request.");
-    const result = await get_ai_response(user_prompt);
-    await interaction.editReply(result);
   }
 });
 
