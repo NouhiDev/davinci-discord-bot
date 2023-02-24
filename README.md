@@ -1,5 +1,5 @@
 # DaVinci Discord Bot
-<img src="[https://github.com/NouhiDev/assets/pfp_hd.png](https://github.com/NouhiDev/assets/blob/main/pfp_hd.png?raw=true)">
+<img src="https://github.com/NouhiDev/assets/blob/main/pfp_hd.png?raw=true">
 The DaVinci discord bot utilizes the OpenAI API to provide natural language processing capabilities within Discord.
 With this bot, users can ask questions, get recommendations, and engage in natural conversation. The bot can be integrated into any Discord server, making it easy to use for a variety of purposes such as customer support, education, or entertainment
 
