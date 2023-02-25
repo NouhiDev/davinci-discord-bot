@@ -5,7 +5,7 @@ const { REST, Routes } = require('discord.js');
 const commands = [
   {
     name: 'ask',
-    description: "Ask Davinci a question.",
+    description: "Ask DaVinci a question.",
     options: [
         {
             name: "prompt",
@@ -22,7 +22,7 @@ const commands = [
   {
     name: 'help',
     description: "Discover what you can do with DaVinci.",
-  }
+  },
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_KEY);
