@@ -45,6 +45,13 @@ client.on("ready", () => {
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
+  // Disable DMs
+  if (!interaction.guild) {
+    await interaction.reply("Currently I only answer questions in Discord servers, sorry.\nYou can invite me into your server here: https://nouhi.dev/davinci");
+    return;
+  }
+
+  // /ask command
   if (interaction.commandName === "ask") {
     user_prompt =
       davinci_003_personality +
@@ -53,17 +60,21 @@ client.on("interactionCreate", async (interaction) => {
     try {
       await interaction.reply("Processing your request...");
       const result = await get_davinci_003_response(user_prompt);
-      if (result["0"] === "?") result["0"] = "";
-      await interaction.editReply(result.trim());
+      // Remove the question mark 
+      // (Has to be a better way)
+      if (result["0"] === "?") console.log("First letter is '?'");
+      await interaction.editReply(result.replace("?", " ").trim());
     } catch {
       console.log("An internal error occurred.");
     }
   }
 
+  // /info command
   if (interaction.commandName === "info") {
     interaction.reply({ embeds: [infoEmbed] });
   }
 
+  // /help command
   if (interaction.commandName === "help") {
     interaction.reply({ embeds: [helpEmbed] });
   }
