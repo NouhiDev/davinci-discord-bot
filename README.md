@@ -12,3 +12,6 @@ With this bot, users can ask questions, get recommendations, and engage in natur
 
 ## Usage
 Using the command `/ask prompt:ENTER YOUR PROMPT HERE` you can ask DaVinci questions and he will attempt to provide answers to your queries.
+
+## Todo
+  - [ ] Create threads for each prompt and continue conversation with context
