@@ -77,15 +77,6 @@ client.on("interactionCreate", async (interaction) => {
       shared_personality +
       interaction.options.getString("prompt");
 
-    // Check if prompt is too long (prompt > 256 characters)
-    if (interaction.options.getString("prompt").length > 256) {
-      await interaction.reply({
-        embeds: [embed_preset("Sorry, that did not work.", "It seems you've exceeded the prompt limit of 256 characters.")],
-        ephemeral: false,
-      });
-      return;
-    }
-
     // Attempt to answer prompt
     try {
       // Processing hint
@@ -100,9 +91,16 @@ client.on("interactionCreate", async (interaction) => {
       // (Has to be a better way)
       if (result["0"] === "?") console.log("First letter is '?'");
 
+      // Shorten prompt if it exceeds 256 characters to avoid Discord embed error
+      temp_prompt = interaction.options.getString("prompt");
+
+      if (interaction.options.getString("prompt").length > 256) {
+        temp_prompt = interaction.options.getString("prompt").substring(0, 249) + " [...]";
+      }
+
       // Respond with result
       await interaction.editReply({
-        embeds: [embed_preset(interaction.options.getString("prompt"), result.replace("?", " ").trim())],
+        embeds: [embed_preset(temp_prompt, result.replace("?", " ").trim())],
         ephemeral: false,
       });
     } catch {
