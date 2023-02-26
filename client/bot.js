@@ -32,6 +32,7 @@ const {
   GatewayIntentBits,
   ActivityType,
   EmbedBuilder,
+  Message,
 } = require("discord.js");
 const client = new Client({
   intents: [
@@ -62,25 +63,51 @@ client.on("interactionCreate", async (interaction) => {
 
   // Disable DMs
   if (!interaction.guild) {
-    await interaction.reply("Currently I only answer questions in Discord servers, sorry.\nYou can invite me into your server here: https://nouhi.dev/davinci");
+    await interaction.reply(
+      "Currently I only answer questions in Discord servers, sorry.\nYou can invite me into your server here: https://nouhi.dev/davinci"
+    );
     return;
   }
 
   // /ask command
   if (interaction.commandName === "ask") {
+    // Adds the AI's personality to the prompt
     user_prompt =
       davinci_003_personality +
       shared_personality +
       interaction.options.getString("prompt");
+
+    // Check if prompt is too long (prompt > 256 characters)
+    if (interaction.options.getString("prompt").length > 256) {
+      await interaction.reply({
+        embeds: [embed_preset("Sorry, that did not work.", "It seems you've exceeded the prompt limit of 256 characters.")],
+        ephemeral: false,
+      });
+      return;
+    }
+
+    // Attempt to answer prompt
     try {
-      await interaction.reply("Processing your request...");
+      // Processing hint
+      await interaction.reply({
+        embeds: [embed_preset("I'm working on it.", "Processing your request...")],
+        ephemeral: false,
+      });
+
+      // Get result
       const result = await get_davinci_003_response(user_prompt);
-      // Remove the question mark 
+      // Remove the question mark
       // (Has to be a better way)
       if (result["0"] === "?") console.log("First letter is '?'");
-      await interaction.editReply(result.replace("?", " ").trim());
+
+      // Respond with result
+      await interaction.editReply({
+        embeds: [embed_preset(interaction.options.getString("prompt"), result.replace("?", " ").trim())],
+        ephemeral: false,
+      });
     } catch {
-      console.log("An internal error occurred.");
+      console.log("An internal error occurred.\n Caused by prompt: " + interaction.options.getString("prompt"));
+      await interaction.editReply({ content: "", embeds: [embed_preset("Sorry, that did not work.", "There was an error processing your request.")] });
     }
   }
 
@@ -110,7 +137,6 @@ async function get_davinci_003_response(prompt) {
 
   return response.data.choices[0].text;
 }
-
 
 // Info Embed
 const infoEmbed = new EmbedBuilder()
@@ -156,5 +182,17 @@ const helpEmbed = new EmbedBuilder()
     iconURL: "https://nouhi.dev/assets/pfp_hd.png",
   });
 
+
+function embed_preset(embedName, embedDescription) {
+  const newEmbed = new EmbedBuilder()
+  .setColor(0xff8086)
+  .setAuthor({
+    name: embedName,
+    url: "https://nouhi.dev/davinci",
+  })
+  .setDescription(embedDescription);
+
+  return newEmbed;
+}
 // Login DaVinci
 client.login(process.env.DISCORD_KEY);
